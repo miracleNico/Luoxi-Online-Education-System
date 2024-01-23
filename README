@@ -14,18 +14,18 @@ Lombok
 HuTool
 
 ---------------------- 工程介绍 ------------------------
-luoxi-client-app			APP接口
-luoxi-client-channel		渠道后台
-luoxi-client-crm			平台管理后台
-luoxi-client-edu			指读API请求,现已弃用
-luoxi-client-openapi		开放平台SDK接口
-luoxi-common-client			服务消费者公共组件
+luoxi-client-app			APP接口 //App Api
+luoxi-client-channel		渠道后台 //Coop-client backend
+luoxi-client-crm			平台管理后台 //Manage backend
+luoxi-client-edu			指读API请求,现已弃用 //(legacy)
+luoxi-client-openapi		开放平台SDK接口 //SDK sockets
+luoxi-common-client			服务消费者公共组件 //Public components (consummer 
 
-luoxi-api					RPC服务调用
-luoxi-common				公共类
+luoxi-api					RPC服务调用 //PRC service
+luoxi-common				公共类 //Public class
 
-luoxi-common-server			服务提供者公共组件
-luoxi-server-admin			角色权限后台管理等服务
-luoxi-server-device			设备信息相关服务
-luoxi-server-edu			学习资源相关服务
-luoxi-server-user			用户服务
+luoxi-common-server			服务提供者公共组件 // service provider related
+luoxi-server-admin			角色权限后台管理等服务 // user permissions
+luoxi-server-device			设备信息相关服务 // device info service
+luoxi-server-edu			学习资源相关服务 // learning material service
+luoxi-server-user			用户服务 //user service
