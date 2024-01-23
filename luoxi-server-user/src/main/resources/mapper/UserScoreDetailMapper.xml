@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luoxi.server.dao.UserScoreDetailMapper">
+	
+	<select id="appUserScoreDetail" resultType="com.luoxi.api.userScoreDetail.protocol.ReqAppUserScoreDetail$RespAppUserScoreDetail">
+		SELECT
+			DATE_FORMAT(usd.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+			usd.change_value,
+			usd.after_value,
+			usd.remark
+		FROM t_user_score_detail usd
+		join t_user_score us on us.user_score_id=usd.user_score_id
+		WHERE 1=1
+			and usd.`status`=true
+			and us.user_id=#{userId}
+			<if test="date!=null and date!=''">
+				and DATE_FORMAT(usd.create_time,'%Y%m')=#{date}			
+			</if>
+			<if test="changeType!=null and changeType!=''">
+				and usd.change_type=#{changeType}
+			</if>
+		ORDER BY usd.create_time desc
+	</select>
+	
+	<sql id="where_userScoreDetailList">
+		and usd.`status`=true
+		and usd.user_score_id=#{userScoreId}
+		<if test="changeType!=null and changeType!=''">
+			and usd.change_type=#{changeType}
+		</if>
+		<if test="startTime!=null and startTime!=''">
+			and DATE_FORMAT(usd.create_time,'%Y%m%d')>=DATE_FORMAT(#{startTime},'%Y%m%d')
+		</if>
+		<if test="endTime!=null and endTime!=''">
+			and DATE_FORMAT(usd.create_time,'%Y%m%d')<![CDATA[<=]]>DATE_FORMAT(#{endTime},'%Y%m%d')
+		</if>
+		<if test="remark!=null and remark!=''">
+			and usd.remark like CONCAT('%',#{remark},'%')
+		</if>
+	</sql>
+	
+	<select id="userScoreDetailList" resultType="com.luoxi.api.userScoreDetail.protocol.ReqUserScoreDetailList$RespUserScoreDetailList">
+		select
+			usd.user_score_detail_id,
+			usd.change_type,
+			usd.change_value,
+			usd.after_value,
+			usd.remark,
+			DATE_FORMAT(usd.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+			DATE_FORMAT(usd.update_time,'%Y-%m-%d %H:%i:%s') update_time
+		from t_user_score_detail usd
+		where 1=1
+		<include refid="where_userScoreDetailList"/>
+		order by usd.create_time desc
+	</select>
+	
+	
+</mapper>

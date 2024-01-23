@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luoxi.server.dao.EduTimetableMapper">
+
+	<select id="existsThisWeekResource" resultType="Boolean">
+		select
+		if(count(1)=0,0,1)
+		from t_edu_timetable b
+		join t_edu_timetable_resource a on b.status=true and b.timetable_id=a.timetable_id
+		join (select TIMESTAMPDIFF(YEAR,birthday,NOW()) age from t_family_member where `status`=true and join_user_id=#{userId} limit 1)ag on ag.age=b.age
+		where 1=1
+		and b.status=true
+		and a.resource_id=#{resourceId}
+		and b.start_date=date_sub(curdate(),interval WEEKDAY(curdate()) day)
+	</select>
+	
+	<select id="timetableList" resultType="com.luoxi.api.eduTimetable.vo.EduTimetableVo">
+		select
+		t.timetable_id,
+		t.age,
+		DATE_FORMAT(t.start_date,'%Y-%m-%d')start_date,
+		DATE_FORMAT(t.end_date,'%Y-%m-%d')end_date,
+		t.content
+		from t_edu_timetable t 
+		join (select TIMESTAMPDIFF(YEAR,birthday,NOW()) age from t_family_member where `status`=true and join_user_id=#{userId} limit 1)ag on ag.age=t.age
+		where 1=1
+		and t.status=true
+		and DATE_ADD(date_sub(curdate(),interval WEEKDAY(curdate()) day),INTERVAL 7 DAY)>=t.start_date
+		order by start_date desc
+		limit 3
+	</select>
+	
+	<select id="timetableResource" resultType="com.luoxi.api.eduResource.vo.EduResourceVo">
+		select
+			rs.resource_id,
+			b.business_code,
+			rs.resource_type,
+			rs.third_id,
+			rs.resource_title,
+			rs.introduction,
+			rs.content,
+			IFNULL(rs.cover_url,al.cover_url) cover_url,
+			rs.file_url,
+			rs.media_type,
+			th.directory_name themeName
+		from t_edu_timetable t 
+			join t_edu_timetable_resource tr on tr.timetable_id=t.timetable_id
+			join t_edu_resource rs on rs.status=true and rs.resource_id=tr.resource_id
+			left join v_edu_theme_resource th on th.resource_id=rs.resource_id
+			left join t_business b on b.`status`=true and b.business_id=rs.business_id
+			left join t_edu_resource al on al.STATUS=true and al.resource_id=rs.parent_id
+		where 1=1
+			and t.status=true 
+			and t.timetable_id=#{timetableId}
+		group by rs.resource_id
+	</select>
+	
+</mapper>

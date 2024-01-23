@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luoxi.server.dao.UserScoreExchangeMapper">
+	
+	
+	<select id="userScoreExchangeList" resultType="com.luoxi.api.userScoreExchange.protocol.ReqUserScoreExchangeList$RespUserScoreExchangeList">
+		select
+		se.*,
+		ch.channel_name
+		from t_user_score_exchange se
+		left join t_channel ch on ch.channel_id=se.channel_id
+		where  1=1
+		and se.`status`=true
+		<if test="channelId!=null and channelId!=''">
+			and se.channel_id=#{channelId}
+		</if>
+		<if test="orderNumber!=null and orderNumber!=''">
+			and se.order_number like CONCAT('%',#{orderNumber},'%')
+		</if>
+		<if test="phone!=null and phone!=''">
+			and se.phone like CONCAT('%',#{phone},'%')
+		</if>
+		<if test="courierNumber!=null and courierNumber!=''">
+			and se.courier_number like CONCAT('%',#{courierNumber},'%')
+		</if>
+		<if test="sendStatus!=null and sendStatus!=''">
+			and se.send_status=#{sendStatus}
+		</if>
+		<if test="startTime!=null and startTime!=''">
+			and DATE_FORMAT(se.create_time,'%Y%m%d')>=DATE_FORMAT(#{startTime},'%Y%m%d')
+		</if>
+		<if test="endTime!=null and endTime!=''">
+			and DATE_FORMAT(se.create_time,'%Y%m%d')<![CDATA[<=]]>DATE_FORMAT(#{endTime},'%Y%m%d')
+		</if>
+		<if test="remark!=null and remark!=''">
+			and se.remark like CONCAT('%',#{remark},'%')
+		</if>
+		order by se.order_number desc
+	</select>
+	
+	
+	
+
+	
+</mapper>

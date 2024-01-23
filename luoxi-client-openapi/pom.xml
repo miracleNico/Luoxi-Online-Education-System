@@ -1,0 +1,59 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.luoxi</groupId>
+    <artifactId>luoxi</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <artifactId>luoxi-client-openapi</artifactId>
+  
+  <dependencies>
+  		
+	  	<dependency>
+	  		<groupId>com.luoxi</groupId>
+	  		<artifactId>luoxi-common</artifactId>
+	  		<version>0.0.1-SNAPSHOT</version>
+	  	</dependency>
+	  	
+	  	<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>nz.net.ultraq.thymeleaf</groupId>
+			<artifactId>thymeleaf-layout-dialect</artifactId>
+		</dependency>
+		
+		<dependency>
+		    <groupId>net.sourceforge.nekohtml</groupId>
+		    <artifactId>nekohtml</artifactId>
+		</dependency>
+	  	
+	  	<!-- 此处单独导入pagehelper目的是为了兼容消费端pagehelper.Page(注意此处导入的跟服务端不一样) -->
+	  	<dependency>
+		    <groupId>com.github.pagehelper</groupId>
+		    <artifactId>pagehelper</artifactId>
+		    <version>5.1.10</version>
+		</dependency>
+		
+		<!-- swagger-bootstrap-ui包 -->
+		<dependency>
+		    <groupId>com.github.xiaoymin</groupId>
+		    <artifactId>swagger-bootstrap-ui</artifactId>
+		    <version>1.9.4</version>
+		</dependency>
+	  	
+  </dependencies>
+  
+  <build>
+  		<finalName>luoxi-client-openapi</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+  </build>
+  
+</project>

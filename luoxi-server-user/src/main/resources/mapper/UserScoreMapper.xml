@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luoxi.server.dao.UserScoreMapper">
+	
+	<sql id="where_userScoreList">
+		and u.`status`=true
+		<if test="channelId!=null and channelId!=''">
+			and ap.channel_id=#{channelId}
+		</if>
+		<if test="user!=null and user!=''">
+			and (
+				u.user_id like CONCAT('%',#{user},'%') or
+				u.phone like CONCAT('%',#{user},'%') or
+				u.email like CONCAT('%',#{user},'%')
+				)
+		</if>
+		<if test="appId!=null and appId!=''">
+			and u.app_id=#{appId}
+		</if>
+		<if test="startTime!=null and startTime!=''">
+			and DATE_FORMAT(us.create_time,'%Y%m%d')>=DATE_FORMAT(#{startTime},'%Y%m%d')
+		</if>
+		<if test="endTime!=null and endTime!=''">
+			and DATE_FORMAT(us.create_time,'%Y%m%d')<![CDATA[<=]]>DATE_FORMAT(#{endTime},'%Y%m%d')
+		</if>
+		<if test="remark!=null and remark!=''">
+			and us.remark like CONCAT('%',#{remark},'%')
+		</if>
+	</sql>
+	
+	<select id="userScoreList" resultType="com.luoxi.api.userScore.protocol.ReqUserScoreList$RespUserScoreList">
+		select
+			us.user_score_id,
+			u.username,
+			u.phone,
+			IFNULL(us.`value`,0) score,
+			ch.channel_name,
+			ap.app_name,
+			DATE_FORMAT(us.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+			DATE_FORMAT(us.update_time,'%Y-%m-%d %H:%i:%s') update_time
+		from t_user u
+			left join t_user_score us on us.user_id=u.user_id
+			left join t_app ap on ap.app_id=u.app_id
+			left join t_channel ch on ch.channel_id=ap.channel_id
+		where 1=1
+			<include refid="where_userScoreList"/>
+		order by score desc
+	</select>
+	
+	<select id="userScoreListSum" resultType="map">
+		select
+			SUM(IFNULL(us.`value`,0)) score
+		from t_user u
+			left join t_user_score us on us.user_id=u.user_id
+			left join t_app ap on ap.app_id=u.app_id
+			left join t_channel ch on ch.channel_id=ap.channel_id
+		where 1=1
+		<include refid="where_userScoreList"/>
+	</select>
+
+	
+</mapper>

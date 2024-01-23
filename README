@@ -1,0 +1,31 @@
+---------------------- 依赖 ------------------------
+Maven
+SpringCloudAlibaba 2.2.3
+dubbo 2.7.8
+Nacos 1.3.0
+Seata 1.2.0
+Mybatis Tk
+Mysql 5.7.30
+Redis
+Mongodb
+Druid
+Swagger2
+Lombok
+HuTool
+
+---------------------- 工程介绍 ------------------------
+luoxi-client-app			APP接口
+luoxi-client-channel		渠道后台
+luoxi-client-crm			平台管理后台
+luoxi-client-edu			指读API请求,现已弃用
+luoxi-client-openapi		开放平台SDK接口
+luoxi-common-client			服务消费者公共组件
+
+luoxi-api					RPC服务调用
+luoxi-common				公共类
+
+luoxi-common-server			服务提供者公共组件
+luoxi-server-admin			角色权限后台管理等服务
+luoxi-server-device			设备信息相关服务
+luoxi-server-edu			学习资源相关服务
+luoxi-server-user			用户服务

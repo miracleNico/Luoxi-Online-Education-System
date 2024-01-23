@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luoxi.server.dao.EduDirectoryMapper">
+
+	<select id="eduThemeListByMediaType" resultType="com.luoxi.api.eduDirectory.protocol.ReqEduCondition$RespEduConditionKV">
+		SELECT
+			d.directory_name `key`,
+			d.directory_id val 
+		FROM t_edu_directory d
+		join t_edu_directory_resource dr on dr.directory_id=d.directory_id
+		join t_edu_resource r on r.resource_id=dr.resource_id
+		WHERE 1=1
+			and d.status=true
+			and r.status=true
+			AND d.directory_type = 'THEME' 
+			AND d.parent_id = ''
+			AND r.media_type=#{mediaType}
+		GROUP BY d.directory_id
+		ORDER BY d.sort
+	</select>
+	
+	
+</mapper>

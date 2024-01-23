@@ -1,0 +1,16 @@
+{
+    "logoInfo":{
+        "title":"泺息科技",
+        "image":"images/logo-luoxi.png",
+        "href":"main"
+    },
+    "homeInfo":{
+        "title":"统计",
+        "icon":"fa fa-home",
+        "href":"statistical/statisticalPage"
+    },
+    "menuInfo":{
+        "currency":{},
+	    "component": {}
+    }
+}

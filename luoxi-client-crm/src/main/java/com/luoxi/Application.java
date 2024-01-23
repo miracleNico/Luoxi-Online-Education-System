@@ -1,0 +1,24 @@
+package com.luoxi;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.scheduling.annotation.EnableAsync;
+
+//@EnableRedisHttpSession//session负载均衡
+@EnableAsync
+@EnableDiscoveryClient
+@SpringBootApplication(scanBasePackages = {"com.luoxi"})
+/**
+ * 如果加载了数据源依赖,属性文件未配置的情况下需要排除数据源加载
+ * (exclude= {
+ DruidDataSourceAutoConfigure.class,DataSourceAutoConfiguration.class,
+ DataSourceTransactionManagerAutoConfiguration.class,
+ HibernateJpaAutoConfiguration.class})*/
+public class Application {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+
+}

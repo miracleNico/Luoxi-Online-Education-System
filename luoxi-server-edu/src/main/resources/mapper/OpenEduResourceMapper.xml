@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luoxi.server.dao.OpenEduResourceMapper">
+
+	<select id="recommendResource" resultType="com.luoxi.api.eduResource.vo.OpenEduResourceBaseVo">
+		select
+			rs.resource_id,
+			rs.third_id playId,
+			rs.resource_title,
+			ifnull(rs.handle_cover_url,rs.cover_url) cover_url,
+			rs.handle_file_url file_url,
+			rs.media_type,
+			rs.imgbook_type,
+			th.directory_id themeId,
+			th.directory_name themeName
+		from t_edu_resource rs
+		left join v_edu_theme_resource th on th.resource_id=rs.resource_id
+		where 1=1
+			and rs.`status`=true
+			and rs.resource_type='RESOURCE'
+			and rs.media_type=#{mediaType}
+			<if test="language!=null and language!=''">
+				<choose>
+					<when test="excludeMixedLanguage==true">
+						and rs.`language`=#{language}						
+					</when>
+					<otherwise>
+						and FIND_IN_SET(#{language},rs.`language`)>0
+					</otherwise>
+				</choose>
+			</if>
+			<if test="themeId!=null and themeId!=''">
+				and th.directory_id=#{themeId}
+			</if>
+		GROUP BY rs.resource_id
+		order by TRUNCATE(RAND(),4)
+		limit ${number}
+	</select>
+	
+	<select id="searchResource" resultType="com.luoxi.api.eduResource.vo.OpenEduResourceBaseVo">
+		select
+			rs.resource_id,
+			rs.third_id playId,
+			rs.resource_title,
+			ifnull(rs.handle_cover_url,rs.cover_url) cover_url,
+			rs.handle_file_url file_url,
+			rs.media_type,
+			rs.imgbook_type,
+			th.directory_id themeId,
+			th.directory_name themeName
+		from t_edu_resource rs
+		left join v_edu_theme_resource th on th.resource_id=rs.resource_id
+		where 1=1
+			and rs.`status`=true
+			and rs.resource_type='RESOURCE'
+			and rs.media_type=#{mediaType}
+			<if test="imgbookType!=null and imgbookType!=''">
+				and rs.imgbook_type=#{imgbookType}
+			</if>
+			<if test="minAge!=null and maxAge!=null">
+				AND ((#{minAge}>=rs.min_age and rs.max_age>=#{minAge}) or (#{maxAge}>=rs.min_age and rs.max_age>=#{maxAge}))
+			</if>
+			<if test="language!=null and language!=''">
+				<choose>
+					<when test="excludeMixedLanguage==true">
+						and rs.`language`=#{language}						
+					</when>
+					<otherwise>
+						and FIND_IN_SET(#{language},rs.`language`)>0
+					</otherwise>
+				</choose>
+			</if>
+			<if test="keyword!=null and keyword!=''">
+				and rs.resource_title like CONCAT('%',#{keyword},'%')			
+			</if>
+			<if test="themeId!=null and themeId!=''">
+				and th.directory_id=#{themeId}
+			</if>
+		GROUP BY rs.resource_id
+		order by rs.create_time desc
+	</select>
+	
+	<select id="eduResourceInfo" resultType="com.luoxi.api.eduResource.vo.OpenEduResourceInfoVo">
+		select
+			rs.resource_id,
+			rs.resource_type,
+			rs.third_id playId,
+			rs.resource_title,
+			rs.introduction,
+			rs.content,
+			ifnull(rs.handle_cover_url,rs.cover_url) cover_url,
+			rs.handle_file_url file_url,
+			rs.media_type,
+			rs.imgbook_type,
+			th.directory_id themeId,
+			th.directory_name themeName,
+			rs.total
+		from t_edu_resource rs
+		left join v_edu_theme_resource th on th.resource_id=rs.resource_id
+		where 1=1
+			and rs.resource_id=#{resourceId}
+			and rs.`status`=true
+		group by rs.resource_id
+	</select>
+	
+	<select id="eduResourceDetail" resultType="com.luoxi.api.eduResource.vo.OpenEduResourceInfoVo">
+		SELECT
+			rs.resource_id,
+			rs.resource_type,
+			rs.third_id playId,
+			rs.resource_title,
+			rs.introduction,
+			rs.content,
+			ifnull(rs.handle_cover_url,rs.cover_url) cover_url,
+			rs.handle_file_url file_url,
+			rs.media_type,
+			rs.imgbook_type
+		FROM t_edu_resource rs
+		join t_business b on b.`status`=true and b.business_id=rs.business_id
+		where 1=1
+			and rs.`status`=true
+			and rs.parent_id=#{resourceId}
+			<if test="language!=null and language!=''">
+				<choose>
+					<when test="excludeMixedLanguage==true">
+						and rs.`language`=#{language}
+					</when>
+					<otherwise>
+						and FIND_IN_SET(#{language},rs.`language`)>0
+					</otherwise>
+				</choose>
+			</if>
+		order by rs.third_id asc
+	</select>
+	
+</mapper>

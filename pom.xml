@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.luoxi</groupId>
+	<artifactId>luoxi</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>luoxi</name>
+	<description>luoxi</description>
+	<packaging>pom</packaging>
+	
+	<parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.2.13.RELEASE</version>
+    </parent>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+		<maven.test.skip>true</maven.test.skip> 
+		<maven.javadoc.skip>true</maven.javadoc.skip>
+		<maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+		<revision>0.0.1-SNAPSHOT</revision>
+        <spring-cloud-alibaba.version>2.2.3.RELEASE</spring-cloud-alibaba.version>
+        <swagger.version>2.9.2</swagger.version>
+	</properties>
+	
+	<repositories>
+		<repository>
+	       <id>alimaven</id>    
+	       <name>aliyun maven</name>    
+	       <url>https://maven.aliyun.com/repository/public</url>    
+	       <releases>    
+	           <enabled>true</enabled>    
+	       </releases>    
+	        <snapshots>    
+	            <enabled>true</enabled>    
+	        </snapshots>    
+	    </repository>
+	    <repository>
+	        <id>spring-snapshots</id>
+	        <name>Spring Snapshots</name>
+	        <url>https://repo.spring.io/libs-snapshot</url>
+	        <snapshots>
+	            <enabled>true</enabled>
+	        </snapshots>
+	    </repository>
+	    <repository>
+            <id>central-repository</id>
+            <name>Central Repository</name>
+            <url>http://central.maven.org/maven2/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+          <id>nexus</id>
+          <name>Nexus Repository</name>
+          <url>http://106.52.183.111:8099/nexus/content/groups/public</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </repository> 
+	</repositories>
+	
+	<pluginRepositories>
+        <pluginRepository>
+            <id>nexus</id>
+            <name>Nexus Plugin Repository</name>
+            <url>http://106.52.183.111:8099/nexus/content/groups/public</url>
+            <snapshots><enabled>true</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
+        </pluginRepository>
+    </pluginRepositories>
+	
+	<!-- 父POM负责管理版本 -->
+	<dependencyManagement>  
+        <dependencies>
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+	
+	<dependencies>
+		
+		<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+	  	
+	  	<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        
+        <dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+        <!-- Dubbo Spring Cloud Starter -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-dubbo</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+		
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        
+        <!-- log4j -->
+        <dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+		
+		<!--swagger2依赖-->
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>${swagger.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.persistence</groupId>
+			<artifactId>persistence-api</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+	    
+	    <dependency>
+		    <groupId>com.google.code.gson</groupId>
+		    <artifactId>gson</artifactId>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.codehaus.jettison</groupId>
+		    <artifactId>jettison</artifactId>
+		    <version>1.4.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.6</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-pool2</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.ocpsoft.prettytime</groupId>
+			<artifactId>prettytime</artifactId>
+			<version>4.0.1.Final</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>joda-time</groupId>
+		    <artifactId>joda-time</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>net.sourceforge.jexcelapi</groupId>
+			<artifactId>jxl</artifactId>
+			<version>2.6.12</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.17</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.17</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.bouncycastle</groupId>
+		    <artifactId>bcprov-jdk15on</artifactId>
+		    <version>1.64</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>cn.hutool</groupId>
+		    <artifactId>hutool-all</artifactId>
+		    <version>5.3.4</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>com.github.promeg</groupId>
+		    <artifactId>tinypinyin</artifactId>
+		    <version>2.0.3</version>
+		</dependency>
+		
+		<!-- kafka 
+		<dependency>
+	        <groupId>org.springframework.kafka</groupId>
+	        <artifactId>spring-kafka</artifactId>
+	    </dependency>-->
+		
+	</dependencies>
+	
+	<build>
+		<pluginManagement>
+		    <plugins>
+			    <plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+				</plugin>
+		    </plugins>
+	    </pluginManagement>
+	</build>
+	
+	<modules>
+		<module>luoxi-common</module>
+		<module>luoxi-common-client</module>
+		<module>luoxi-common-server</module>
+		<module>luoxi-api</module>
+		<module>luoxi-client-openapi</module>
+		<module>luoxi-client-edu</module>
+		<module>luoxi-client-app</module>
+		<module>luoxi-client-crm</module>
+		<module>luoxi-client-channel</module>
+		<module>luoxi-client-vision</module>
+		<module>luoxi-server-admin</module>
+		<module>luoxi-server-user</module>
+		<module>luoxi-server-device</module>
+		<module>luoxi-server-edu</module>
+		<module>luoxi-server-vision</module>
+	</modules>
+	
+</project>

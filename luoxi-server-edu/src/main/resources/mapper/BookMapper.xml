@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luoxi.server.dao.BookMapper">
+
+	<select id="bookInfo" resultType="com.luoxi.api.book.protocol.ReqBookInfo$RespBookInfo">
+		SELECT
+			b.*,
+			s.subject_name,
+			g.grade_name,
+			p.press_name
+		FROM `t_book` b
+		left join t_press p on p.press_id=b.press_id
+		left join t_grade g on g.grade_id=b.grade_id
+		left join t_subject s on s.subject_id=b.subject_id
+		where b.`status`=true and b.book_id=#{bookId}
+	</select>
+
+	<update id="removeBook">
+		update t_book set status=false 
+		where book_id in
+		(
+		<foreach collection="list" item="item" separator=",">
+			#{item.bookId}
+		</foreach>
+		)
+	</update>
+	
+	<select id="getBook" resultType="com.luoxi.model.Book">
+		select * from t_book where status=true and book_id=#{bookId}
+	</select>
+	
+	<select id="bookList" resultType="com.luoxi.api.book.protocol.ReqBookList$RespBookList">
+			select
+				DATE_FORMAT(bk.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+				DATE_FORMAT(bk.update_time,'%Y-%m-%d %H:%i:%s') update_time,
+				bk.*,
+				ps.press_name,
+				gd.grade_name,
+				sj.subject_name
+			from t_book bk
+				LEFT JOIN t_press ps on ps.press_id=bk.press_id
+				LEFT JOIN t_grade gd on gd.grade_id=bk.grade_id
+				LEFT JOIN t_subject sj on sj.subject_id=bk.subject_id
+			where bk.`status`=true
+			<if test="book!=null and book!=''">
+				and (bk.book_id like CONCAT('%',#{book},'%') or bk.book_name  like CONCAT('%',#{book},'%'))			
+			</if>
+			<if test="pressId!=null and pressId!=''">
+				and bk.press_id=#{pressId}
+			</if>
+			<if test="gradeId!=null and gradeId!=''">
+				and bk.grade_id=#{gradeId}
+			</if>
+			<if test="subjectId!=null and subjectId!=''">
+				and bk.subject_id=#{subjectId}
+			</if>
+			<if test="source!=null and source!=''">
+				and bk.source=#{source}
+			</if>
+			<if test="startTime!=null and startTime!=''">
+				and DATE_FORMAT(bk.create_time,'%Y%m%d')>=DATE_FORMAT(#{startTime},'%Y%m%d')
+			</if>
+			<if test="endTime!=null and endTime!=''">
+				and DATE_FORMAT(bk.create_time,'%Y%m%d')<![CDATA[<=]]>DATE_FORMAT(#{endTime},'%Y%m%d')
+			</if>
+			<if test="remark!=null and remark!=''">
+				and bk.remark like CONCAT('%',#{remark},'%')
+			</if>
+		order by bk.book_id desc
+	</select>
+	
+	<select id="searchBook" resultType="com.luoxi.api.book.protocol.ReqSearchBook$RespSearchBook">
+		SELECT
+			b.book_id,
+			b.book_name,
+			b.press_id,
+			p.press_name,
+			b.grade_id,
+			g.grade_name,
+			b.subject_id,
+			s.subject_name,
+			b.cover_url,
+			b.zip_url
+		FROM `t_book` b
+			left join t_press p on p.press_id=b.press_id
+			left join t_grade g on g.grade_id=b.grade_id
+			left join t_subject s on s.subject_id=b.subject_id
+		where 1=1
+			and b.`status`=true
+			<if test="book!=null and book!=''">
+				and (b.book_id=#{book} or b.book_name like CONCAT('%',#{book},'%'))
+			</if>
+			<if test="press!=null and press!=''">
+				and (p.press_id=#{press} or p.press_name like CONCAT('%',#{press},'%'))			
+			</if>
+			<if test="grade!=null and grade!=''">
+				and (g.grade_id=#{grade} or g.grade_name like CONCAT('%',#{grade},'%'))			
+			</if>
+			<if test="subject!=null and subject!=''">
+				and (s.subject_id=#{subject} or subject_name like CONCAT('%',#{subject},'%'))				
+			</if>
+	</select>
+	
+	
+	
+</mapper>

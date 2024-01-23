@@ -1,0 +1,1 @@
+java -jar target\luoxi-server-edu.jar

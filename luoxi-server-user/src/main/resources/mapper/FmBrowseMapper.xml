@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luoxi.server.dao.FmBrowseMapper">
+	
+	<select id="fmBrowseList" resultType="com.luoxi.api.fmbrowse.protocol.ReqFmBrowseList$RespFmBrowseList">
+		SELECT
+			bs.fm_browse_id,
+			bs.resource_id,
+			b.business_code,
+			rs.resource_type,
+			rs.third_id,
+			rs.resource_title,
+			rs.introduction,
+			rs.content,
+			rs.cover_url,
+			rs.file_url,
+			bs.ratio,
+			rs.media_type,
+			rs.imgbook_type
+		FROM t_fm_browse bs
+			join t_edu_resource rs on rs.`status`=true and rs.resource_id=bs.resource_id
+			join t_business b on b.`status`=true and b.business_id=rs.business_id
+		where 1=1
+			and bs.user_id=#{userId}
+		order by bs.update_time desc
+	</select>
+	
+	<delete id="fmBrowseOverflow">
+		delete a from t_fm_browse a
+		join(
+		select * from (select (@row_number:=@row_number+1) row_number,fm_browse_id from t_fm_browse fm,(select @row_number := 0) tmp_row_number where user_id=#{userId} order by update_time desc)a where row_number>100
+		)b on b.fm_browse_id=a.fm_browse_id
+	</delete>
+	
+</mapper>

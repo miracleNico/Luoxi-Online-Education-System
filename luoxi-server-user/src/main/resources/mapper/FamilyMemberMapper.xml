@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luoxi.server.dao.FamilyMemberMapper">
+	
+	
+	<select id="familyMemberList" resultType="com.luoxi.api.family.protocol.ReqFamilyMemberList$RespFamilyMemberList">
+		select * from t_family_member fm where fm.status=true
+		and fm.join_user_id=#{joinUserId}
+	</select>
+	
+	
+	<select id="existRelationName" resultType="boolean">
+		select count(1) from t_family_member fm where fm.status=true 
+		and fm.join_user_id=#{joinUserId} and fm.relation_name=#{relationName}
+	</select>
+	
+	<select id="vaccineList" resultType="com.luoxi.api.family.protocol.ReqGrowthRecord$RespGrowthRecordVaccine">
+		select
+		DATE_ADD(fm.birthday,INTERVAL v.month_age MONTH) vaccine_date,
+		v.vaccine_info
+		from t_fm_vaccine v
+		left join(select birthday from t_family_member fm where fm.`status`=true and fm.join_user_id=#{userId} limit 1)fm on 1=1
+		where DATE_FORMAT(DATE_ADD(fm.birthday,INTERVAL v.month_age MONTH),'%Y%m')=#{month}
+	</select>
+	
+	<select id="getStandardHeightAndWeight" resultType="map">
+		select
+		standard_type,value
+		from(
+		select
+		st.standard_type,
+		CONCAT(st.sd1_,'-',st.sd1) value,
+		DATE_FORMAT(DATE_ADD(fm.birthday,INTERVAL st.month_age MONTH),'%Y%m') standard_date
+		from t_fm_standard st
+		join (select if(gender=0,'GIRL','BOY')sex,birthday from t_family_member fm where fm.`status`=true and fm.join_user_id=#{userId} limit 1)fm on fm.sex=st.sex
+		)x
+		where #{month}>=standard_date
+		order by standard_date desc
+		limit 2
+	</select>
+	
+	<select id="getMonthAge" resultType="map">
+		select 
+		nick_name,
+		floor(month_age/12) age,
+		floor(month_age%12) month
+		from(
+		select 
+		nick_name,
+		PERIOD_DIFF(#{month},DATE_FORMAT(fm.birthday,'%Y%m')) month_age
+		from t_family_member fm 
+		where 1=1
+		and fm.`status`=true 
+		and fm.join_user_id=#{userId} 
+		limit 1
+		)x 
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
+</mapper>

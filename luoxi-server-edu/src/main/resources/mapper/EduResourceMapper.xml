@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luoxi.server.dao.EduResourceMapper">
+
+	<select id="eduResourceInfo" resultType="com.luoxi.api.eduResource.vo.EduResourceVo">
+		select
+			rs.resource_id,
+			b.business_code,
+			rs.resource_type,
+			rs.third_id,
+			rs.resource_title,
+			rs.introduction,
+			rs.content,
+			rs.cover_url,
+			rs.file_url,
+			rs.media_type,
+			rs.imgbook_type,
+			th.directory_id themeId,
+			th.directory_name themeName,
+			rs.total,
+			!ISNULL(cl.fm_collect_id) collect,
+			br.ratio
+		from t_edu_resource rs
+			left join t_business b on b.`status`=true and b.business_id=rs.business_id
+			left join v_edu_theme_resource th on th.resource_id=rs.resource_id
+			left join t_fm_collect cl on cl.user_id=#{userId} and cl.resource_id=rs.resource_id
+			left join t_fm_browse br on br.user_id=#{userId} and br.resource_id=rs.resource_id
+		where 1=1
+			and rs.resource_id=#{resourceId}
+			and rs.`status`=true
+		group by rs.resource_id
+	</select>
+
+	<select id="searchResource" resultType="com.luoxi.api.eduResource.vo.EduResourceVo">
+		select
+			<if test="userId!=null and userId!=''">
+				ag.age,			
+			</if>
+			br.browseNum,
+			rs.resource_id,
+			b.business_code,
+			rs.resource_type,
+			rs.third_id,
+			rs.resource_title,
+			rs.introduction,
+			rs.content,
+			rs.cover_url,
+			rs.file_url,
+			rs.media_type,
+			rs.imgbook_type,
+			rs.total
+		from t_edu_resource rs
+			left join t_business b on b.`status`=true and b.business_id=rs.business_id
+			<if test="userId!=null and userId!=''">
+				left join (select TIMESTAMPDIFF(YEAR,birthday,NOW()) age from t_family_member where `status`=true and join_user_id=#{userId} limit 1)ag on ag.age>=rs.min_age and rs.max_age>=ag.age
+			</if>
+			left join (select * from(select resource_id,count(1)browseNum from t_fm_browse group by resource_id limit 100)x order by browseNum desc)br on br.resource_id=rs.resource_id		
+		where 1=1
+			and rs.`status`=true
+			and rs.resource_type='RESOURCE'
+			<if test="mediaType!=null and mediaType!=''">
+				and rs.media_type=#{mediaType}
+			</if>
+			<if test="keyword!=null and keyword!=''">
+				and rs.resource_title like CONCAT('%',#{keyword},'%')			
+			</if>
+			<if test="imgbookType!=null and imgbookType!=''">
+				and FIND_IN_SET(rs.imgbook_type,#{imgbookType})
+			</if>
+		order by null
+		<if test="userId!=null and userId!=''">
+			,ag.age desc		
+		</if>
+		,browseNum desc
+	</select>
+	
+	<select id="recommendResource" resultType="com.luoxi.api.eduResource.vo.EduResourceVo">
+		select
+			<if test="userId!=null and userId!=''">
+				if(ISNULL(br.resource_id),0,1) browseRecord,
+				if(ISNULL(ag.age),0,1) ageScore,
+				if(ISNULL(brtm.theme_id),0,1) themeScore,			
+			</if>
+			rs.resource_id,
+			b.business_code,
+			rs.resource_type,
+			rs.third_id,
+			rs.resource_title,
+			rs.introduction,
+			rs.content,
+			rs.cover_url,
+			rs.file_url,
+			rs.media_type,
+			rs.imgbook_type,
+			th.directory_name themeName
+		from t_edu_resource rs
+			left join v_edu_theme_resource th on th.resource_id=rs.resource_id
+			left join t_business b on b.`status`=true and b.business_id=rs.business_id
+			<if test="userId!=null and userId!=''">
+				left join (select TIMESTAMPDIFF(YEAR,birthday,NOW()) age from t_family_member where `status`=true and join_user_id=#{userId} limit 1)ag on ag.age>=rs.min_age and rs.max_age>=ag.age
+				left join (select * from(select resource_id from t_fm_browse WHERE user_id=#{userId} order by update_time desc limit 100)x GROUP BY resource_id) br on br.resource_id=rs.resource_id
+				left join (
+					select theme_id from(
+					select xx.directory_id theme_id
+					from t_fm_browse x
+					join v_edu_theme_resource xx on xx.resource_id=x.resource_id
+					where x.user_id=#{userId}
+					order by x.update_time desc limit 100)x GROUP BY theme_id
+				)brtm on brtm.theme_id=th.directory_id			
+			</if>
+		where 1=1
+			and rs.`status`=true
+			and rs.resource_type='RESOURCE'
+			<if test="mediaType!=null and mediaType!=''">
+				and rs.media_type=#{mediaType}
+			</if>
+			<if test="imgbookType!=null and imgbookType!=''">
+				and rs.imgbook_type=#{imgbookType}
+			</if>
+			<if test="language!=null and language!=''">
+				and FIND_IN_SET(#{language},rs.`language`)>0
+			</if>
+			<if test="themeId!=null and themeId!=''">
+				and th.directory_id=#{themeId}
+			</if>
+			<if test="minAge!=null and maxAge!=null">
+				AND ((#{minAge}>=rs.min_age and rs.max_age>=#{minAge}) or (#{maxAge}>=rs.min_age and rs.max_age>=#{maxAge}))
+			</if>
+		GROUP BY rs.resource_id
+		order by null
+		<if test="userId!=null and userId!=''">
+			,browseRecord asc,ageScore desc,themeScore desc		
+		</if>
+		<if test="random">
+			,TRUNCATE(RAND(),4) desc
+		</if>
+	</select>
+	
+	<select id="getEduResourceDetail" resultType="com.luoxi.api.eduResource.protocol.ReqEduResourceDetail$RespEduResourceDetail">
+		SELECT
+			rs.resource_id,
+			b.business_code,
+			rs.resource_type,
+			rs.third_id,
+			rs.resource_title,
+			rs.introduction,
+			rs.content,
+			rs.cover_url,
+			rs.file_url,
+			rs.media_type,
+			rs.imgbook_type
+		FROM t_edu_resource rs
+			join t_business b on b.`status`=true and b.business_id=rs.business_id
+		where 1=1
+		and rs.`status`=true
+		and rs.parent_id=#{parentId}
+		order by rs.third_id asc
+	</select>
+	
+</mapper>

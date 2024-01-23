@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luoxi.server.dao.BusinessContentMapper">
+	
+	<update id="removeBusinessContent">
+		update t_business_content set status=false
+		where business_content_id in (
+		<foreach collection="list" item="item" separator=",">
+			#{item.businessContentId}
+		</foreach>
+		)
+	</update>
+	
+	<select id="getBusinessContent" resultType="com.luoxi.model.BusinessContent">
+		select * from t_business_content where status=true 
+		<if test="contentName!=null and contentName!=''">
+			and content_name=#{contentName}
+		</if>
+		<if test="businessId!=null and businessId!=''">
+			and business_id=#{businessId}
+		</if>
+	</select>
+	
+	<select id="businessContentInfo" resultType="com.luoxi.api.businessContent.protocol.ReqBusinessContentInfo$RespBusinessContentInfo">
+		select
+		bc.*
+		from t_business_content bc
+		where 
+		bc.`status`=true 
+		and bc.business_content_id=#{businessContentId}
+	</select>
+	
+	<select id="businessContentList" resultType="com.luoxi.api.businessContent.protocol.ReqBusinessContentList$RespBusinessContentList">
+		select
+			true `open`,
+			bc.parent_id,
+			bc.business_content_id,
+			bc.content_name,
+			bc.phase,
+			bc.remark
+		from t_business_content bc
+		where bc.`status`=true
+			<if test="contentName!=null and contentName!=''">
+				and bc.content_name like CONCAT('%',#{contentName},'%')
+			</if>
+			<if test="parentId!=null and parentId!=''">
+				and bc.parent_id=#{parentId}			
+			</if>
+			<if test="businessId!=null and businessId!=''">
+				and bc.business_id=#{businessId}			
+			</if>
+			<if test="phase!=null and phase!=''">
+				and bc.phase like CONCAT('%',#{phase},'%')			
+			</if>
+			<if test="remark!=null and remark!=''">
+				and bc.remark like CONCAT('%',#{remark},'%')			
+			</if>
+		order by bc.create_time asc
+	</select>
+	
+	
+	
+</mapper>
