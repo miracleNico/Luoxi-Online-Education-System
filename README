@@ -14,7 +14,7 @@ Lombok
 HuTool
 
 ---------------------- 工程介绍 ------------------------
-luoxi-client-app			APP接口 //App Api
+luoxi-client-app			APP接口 //App Sockets
 luoxi-client-channel		渠道后台 //Coop-client backend
 luoxi-client-crm			平台管理后台 //Manage backend
 luoxi-client-edu			指读API请求,现已弃用 //(legacy)
